@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use crate::models::Progress;
 use crate::START_TIME_STRING;
 
+use crate::errors::*;
+
 use super::*;
 
 //#[derive(Debug, PartialEq, Deserialize, Serialize)] //, Queryable)]
@@ -19,7 +21,13 @@ pub struct Challenge<'a> {
     pub score: u32,
 }
 
-pub fn reducer(progress: &Progress) -> [Challenge; 7] {
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)] //, Queryable)]
+pub struct CheckResponseRequest<'a> {
+    pub id: u32,
+    pub userAnswer: &'a str,
+}
+
+pub fn get_challenges(progress: &Progress) -> [Challenge; 7] {
     [
         one::generate(&progress[0]),
         two::generate(&progress[1]),
@@ -30,6 +38,19 @@ pub fn reducer(progress: &Progress) -> [Challenge; 7] {
         seven::generate(&progress[6]),
     ]
     .to_owned()
+}
+
+pub fn check_answer(payload: CheckResponseRequest) -> ServiceResult<bool> {
+    match payload.id {
+        1 => Ok(one::check(payload.userAnswer)),
+        2 => Ok(two::check(payload.userAnswer)),
+        3 => Ok(three::check(payload.userAnswer)),
+        4 => Ok(four::check(payload.userAnswer)),
+        5 => Ok(five::check(payload.userAnswer)),
+        6 => Ok(six::check(payload.userAnswer)),
+        7 => Ok(seven::check(payload.userAnswer)),
+        _ => Err(ServiceError::InternalServerError),
+    }
 }
 //            Challenge::generate_payload(&progress[0], challenges[0].clone()),
 //            Challenge::generate_payload(&progress[1], challenges[1].clone()),

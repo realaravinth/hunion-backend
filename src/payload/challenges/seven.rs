@@ -41,3 +41,11 @@ pub fn generate<'a>(has_answered: &'a bool) -> Challenge {
         score: 70,
     }
 }
+
+pub fn check(user_answer: &str) -> bool {
+    if user_answer == challengeAnswer {
+        true
+    } else {
+        false
+    }
+}
