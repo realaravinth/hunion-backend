@@ -20,7 +20,7 @@ mod database;
 mod errors;
 mod handlers;
 mod models;
-mod responses;
+mod payload;
 mod utils;
 
 lazy_static! {
@@ -28,6 +28,8 @@ lazy_static! {
         env::var("ROOT").expect("Please set ROOT to the port that you wish to listen to");
     pub static ref START_TIME: StringNumer = get_vars("START_TIME");
     pub static ref END_TIME: StringNumer = get_vars("END_TIME");
+    pub static ref START_TIME_STRING: String = env::var("START_TIME")
+        .expect("Please set START_TIME to the port that you wish to listen to");
 }
 
 fn get_vars(var_name: &str) -> StringNumer {

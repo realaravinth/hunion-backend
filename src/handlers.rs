@@ -5,12 +5,14 @@ use actix_web::{
 };
 
 use super::errors::*;
+use super::payload::*;
 use super::utils::is_authenticated::check;
 use super::utils::start_time::chech_time;
 
 pub async fn login(id: Identity) -> ServiceResult<impl Responder> {
     chech_time()?;
     id.remember("User1".to_owned()); // <- remember identity
+    let response = LoginResponse::new();
     Ok(HttpResponse::Ok().finish())
 }
 
