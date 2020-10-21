@@ -43,7 +43,7 @@ impl ResponseError for ServiceError {
             ServiceError::AlreadyAnswered => StatusCode::CONFLICT,
             ServiceError::AuthorizationRequired => StatusCode::UNAUTHORIZED,
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
-            ServiceError::Timeout => StatusCode::GATEWAY_TIMEOUT,
+            ServiceError::Timeout => StatusCode::FORBIDDEN,
             ServiceError::UnableToConnectToDb => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::TooEarly => StatusCode::FORBIDDEN,
         }
