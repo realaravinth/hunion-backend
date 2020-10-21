@@ -17,6 +17,8 @@ pub enum ServiceError {
     InternalServerError,
     #[fail(display = "time over")] //408
     Timeout,
+    #[fail(display = "too early")] //403
+    TooEarly,
     #[fail(display = "Unable to connect to DB")]
     UnableToConnectToDb,
 }
@@ -43,6 +45,7 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::Timeout => StatusCode::GATEWAY_TIMEOUT,
             ServiceError::UnableToConnectToDb => StatusCode::INTERNAL_SERVER_ERROR,
+            ServiceError::TooEarly => StatusCode::FORBIDDEN,
         }
     }
 }
@@ -55,6 +58,11 @@ impl From<DBError> for ServiceError {
     }
 }
 
+impl From<std::time::SystemTimeError> for ServiceError {
+    fn from(_: std::time::SystemTimeError) -> ServiceError {
+        ServiceError::InternalServerError
+    }
+}
 impl From<actix_http::Error> for ServiceError {
     fn from(_: actix_http::Error) -> ServiceError {
         ServiceError::InternalServerError

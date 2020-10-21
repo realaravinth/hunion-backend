@@ -3,6 +3,9 @@ use pretty_env_logger;
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 use actix_files::Files;
 use actix_http::cookie::SameSite;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
@@ -12,16 +15,40 @@ use actix_web::{
     web, App, HttpRequest, HttpServer, Result,
 };
 use std::env;
-use std::path::PathBuf;
 
 mod database;
 mod errors;
 mod handlers;
+mod models;
+mod responses;
 mod utils;
+
+lazy_static! {
+    pub static ref ROOT: String =
+        env::var("ROOT").expect("Please set ROOT to the port that you wish to listen to");
+    pub static ref START_TIME: StringNumer = get_vars("START_TIME");
+    pub static ref END_TIME: StringNumer = get_vars("END_TIME");
+}
+
+fn get_vars(var_name: &str) -> StringNumer {
+    let value = env::var(var_name).expect(&format!("Please set {}", var_name));
+    StringNumer::Alpha(value.to_owned())
+}
+
+#[derive(Eq, Ord, PartialEq, PartialOrd)]
+pub enum StringNumer {
+    Numeric(u64),
+    Alpha(String),
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     pretty_env_logger::init();
+
+    let _ = env::var("ROOT").expect("Please set ROOT to the port that you wish to listen to");
+    let _ = env::var("START_TIME")
+        .expect("Please set START_TIME to the port that you wish to listen to");
+    let _ = env::var("DURATION_IN_SECONDS").expect("Please set DURATION_IN_SECONDS");
     let port = env::var("PORT").expect("Please set PORT to the port that you wish to listen to");
     let secret =
         env::var("SECRET").expect("Please set SECRET to the port that you wish to listen to");

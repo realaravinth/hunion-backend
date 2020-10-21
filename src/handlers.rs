@@ -6,8 +6,10 @@ use actix_web::{
 
 use super::errors::*;
 use super::utils::is_authenticated::check;
+use super::utils::start_time::chech_time;
 
 pub async fn login(id: Identity) -> ServiceResult<impl Responder> {
+    chech_time()?;
     id.remember("User1".to_owned()); // <- remember identity
     Ok(HttpResponse::Ok().finish())
 }
@@ -19,21 +21,31 @@ pub async fn logout(id: Identity) -> ServiceResult<impl Responder> {
 }
 
 pub async fn leaderoard(id: Identity) -> ServiceResult<impl Responder> {
+    chech_time()?;
     check(&id).await?;
     Ok(HttpResponse::Ok().finish())
 }
 
 pub async fn check_response(id: Identity) -> ServiceResult<impl Responder> {
+    chech_time()?;
     check(&id).await?;
     Ok(HttpResponse::Ok().finish())
 }
 
 pub async fn get_state(id: Identity) -> ServiceResult<impl Responder> {
+    chech_time()?;
     check(&id).await?;
     Ok(HttpResponse::Ok().finish())
 }
 
+pub async fn register() -> ServiceResult<impl Responder> {
+    use crate::ROOT;
+    //TODO    do root shit
+    Ok(HttpResponse::Ok().finish())
+}
+
 pub async fn get_questions(id: Identity) -> ServiceResult<impl Responder> {
+    chech_time()?;
     check(&id).await?;
     Ok(HttpResponse::Ok().finish())
 }
