@@ -14,16 +14,23 @@ use actix_web::{
 use std::env;
 use std::path::PathBuf;
 
+mod database;
 mod errors;
+mod handlers;
+mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     pretty_env_logger::init();
-    let addr = env::var("PORT").expect("Please set PORT to the port that you wish to listen to");
+    let port = env::var("PORT").expect("Please set PORT to the port that you wish to listen to");
     let secret =
         env::var("SECRET").expect("Please set SECRET to the port that you wish to listen to");
     let domain =
         env::var("DOMAIN").expect("Please set DOMAIN to the port that you wish to listen to");
+    let DATABASE_URL = env::var("DATABASE_URL")
+        .expect("Please set DATABASE_URL to the port that you wish to listen to");
+    let STATIC =
+        env::var("STATIC").expect("Please set STATIC to the port that you wish to listen to");
 
     HttpServer::new(move || {
         App::new()
@@ -31,7 +38,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(
                 CookieSession::signed(&secret.as_bytes())
                     .domain(&domain)
-                    .name("shuttlecraft-session")
+                    .name("hunion-session")
                     .path("/")
                     .secure(false),
             )
@@ -45,14 +52,14 @@ async fn main() -> std::io::Result<()> {
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(&secret.as_bytes())
                     .name("Authorization")
-                    .max_age(20)
+                    .max_age(3600)
                     .domain(&domain)
-                    .same_site(SameSite::Lax)
+                    .same_site(SameSite::Strict)
                     .secure(true),
             ))
-            .service(Files::new("/", "/var/www/amnesia-client/static").index_file("index.html"))
+            .service(Files::new("/", &STATIC).index_file("index.html"))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(format!("0.0.0.0:{}", &port))?
     .run()
     .await
 }
