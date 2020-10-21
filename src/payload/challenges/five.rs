@@ -1,15 +1,5 @@
 use super::challenges::Challenge;
-pub static challengeBody: &'static str = r#"
-<p>
-  The flag is hidden in this <a href="./voodo.txt" target="_blank">file</a>. It
-  would be very tedious if you look for it manually, something tells me there's
-  a better way.
-</p>
-  <br />
-  <br />
-  File:
-<a href="./voodo.txt" target="_blank">voodo.txt</a>.
-"#;
+pub static challengeBody: &'static str = r#" <p> The flag is hidden in this <a href='./voodo.txt' target='_blank'>file</a>. It would be very tedious if you look for it manually, something tells me there's a better way. </p> <br /> <br /> File: <a href='./voodo.txt' target='_blank'>voodo.txt</a>. "#;
 
 pub static challengeTitle: &'static str = "hidd3n_in_p1ain_sight";
 
@@ -23,7 +13,7 @@ pub fn generate<'a>(has_answered: &'a bool) -> Challenge {
     };
 
     Challenge {
-        challengeTitle: challengeBody,
+        challengeTitle,
         challengeBody,
         challengeAnswer: answer,
         score: 10,

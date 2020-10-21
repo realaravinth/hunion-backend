@@ -1,6 +1,6 @@
 use super::challenges::Challenge;
-pub static challengeBody: &'static str = r#"
-"#;
+pub static challengeBody: &'static str =
+    r#" <p>Hack this page to retrieve the flag for this challenge</p> "#;
 
 pub static challengeTitle: &'static str = "hack_the_gibson";
 
@@ -15,7 +15,7 @@ pub fn generate<'a>(has_answered: &'a bool) -> Challenge {
 
     Challenge {
         id: 6,
-        challengeTitle: challengeBody,
+        challengeTitle,
         challengeBody,
         challengeAnswer: answer,
         score: 20,

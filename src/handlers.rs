@@ -48,7 +48,10 @@ pub async fn register() -> ServiceResult<impl Responder> {
 }
 
 pub async fn get_questions(id: Identity) -> ServiceResult<impl Responder> {
-    chech_time()?;
-    check(&id).await?;
-    Ok(HttpResponse::Ok().finish())
+    //    chech_time()?;
+    //    check(&id).await?;
+    use crate::models::Progress;
+    let progress = [false; 7];
+    let resp = challenges::challenges::get_challenges(&progress);
+    Ok(HttpResponse::Ok().json(resp))
 }
