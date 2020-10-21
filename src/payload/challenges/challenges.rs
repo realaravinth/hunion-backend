@@ -27,7 +27,7 @@ pub struct CheckResponseRequest<'a> {
     pub userAnswer: &'a str,
 }
 
-pub fn get_challenges(progress: &Progress) -> [Challenge; 7] {
+pub fn get_challenges(progress: &Progress) -> [&Challenge; 7] {
     [
         one::generate(&progress[0]),
         two::generate(&progress[1]),
@@ -37,7 +37,6 @@ pub fn get_challenges(progress: &Progress) -> [Challenge; 7] {
         six::generate(&progress[5]),
         seven::generate(&progress[6]),
     ]
-    .to_owned()
 }
 
 pub fn check_answer(payload: CheckResponseRequest) -> ServiceResult<bool> {

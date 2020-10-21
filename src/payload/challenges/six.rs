@@ -1,17 +1,23 @@
 use super::challenges::Challenge;
-pub static challengeBody: &'static str =
-    r#" <p>Hack this page to retrieve the flag for this challenge</p> "#;
-
-pub static challengeTitle: &'static str = "hack_the_gibson";
-
 pub static challengeAnswer: &'static str = "zlZ6QPh97sg16ds856RK0DIK1waNJwy";
+pub static UNANSWERED: &'static Challenge = &init(&false);
 
-pub fn generate<'a>(has_answered: &'a bool) -> Challenge {
-    let answer = if *has_answered {
-        Some(challengeAnswer)
+pub static ANSWERED: &'static Challenge = &init(&true);
+
+pub fn generate<'a>(has_answered: &'a bool) -> &Challenge {
+    if *has_answered {
+        ANSWERED
     } else {
-        None
-    };
+        UNANSWERED
+    }
+}
+
+pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
+    let challengeBody = r#" <p>Hack this page to retrieve the flag for this challenge</p> "#;
+    let challengeTitle = "hack_the_gibson";
+    let ans = "zlZ6QPh97sg16ds856RK0DIK1waNJwy";
+
+    let answer = if *has_answered { Some(ans) } else { None };
 
     Challenge {
         id: 6,

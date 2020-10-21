@@ -25,6 +25,8 @@ mod payload;
 mod utils;
 
 use crate::handlers::*;
+use crate::payload::challenges::*;
+use challenges::Challenge;
 
 lazy_static! {
     pub static ref ROOT: String =
@@ -97,6 +99,7 @@ async fn main() -> std::io::Result<()> {
             .route("/api/register", web::post().to(register))
             .default_service(Files::new("/[^a-zA-Z0-9]", &STATIC).index_file("index.html"))
     })
+    .keep_alive(0)
     .bind(format!("0.0.0.0:{}", &port))?
     .run()
     .await

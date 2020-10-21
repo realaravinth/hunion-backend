@@ -1,15 +1,23 @@
 use super::challenges::Challenge;
-pub static challengeBody: &'static str = r#" <p> What does 'RTV3Jld3djFqUlZSdUhUXnlmOCYl' mean? I think it has something to do with a binary-to-text encoding that's popular on the World Wide Web </p> "#;
-pub static challengeTitle: &'static str = ".... --- .-- -.. -.--";
 
 pub static challengeAnswer: &'static str = "E5w&Wwv1jRVRuHT^yf8&%";
+pub static UNANSWERED: &'static Challenge = &init(&false);
 
-pub fn generate<'a>(has_answered: &'a bool) -> Challenge {
-    let answer = if *has_answered {
-        Some(challengeAnswer)
+pub static ANSWERED: &'static Challenge = &init(&true);
+
+pub fn generate<'a>(has_answered: &'a bool) -> &Challenge {
+    if *has_answered {
+        ANSWERED
     } else {
-        None
-    };
+        UNANSWERED
+    }
+}
+
+pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
+    let ans = "E5w&Wwv1jRVRuHT^yf8&%";
+    let challengeBody = r#" <p> What does 'RTV3Jld3djFqUlZSdUhUXnlmOCYl' mean? I think it has something to do with a binary-to-text encoding that's popular on the World Wide Web </p> "#;
+    let challengeTitle = ".... --- .-- -.. -.--";
+    let answer = if *has_answered { Some(ans) } else { None };
 
     Challenge {
         challengeTitle,
