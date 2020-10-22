@@ -1,5 +1,6 @@
 use crate::errors::*;
 use crate::models::InsertableUser;
+use crate::payload::leaderboard::Leaderboard;
 use crate::payload::register::RegisterRequestPayload;
 use diesel::prelude::*;
 
@@ -16,11 +17,7 @@ pub fn find_user_by_userid(
     Ok(user)
 }
 
-pub fn insert_new_user(
-    // prevent collision with `name` column imported inside the function
-    payload: RegisterRequestPayload,
-    conn: &PgConnection,
-) -> ServiceResult<()> {
+pub fn insert_new_user(payload: RegisterRequestPayload, conn: &PgConnection) -> ServiceResult<()> {
     use crate::schema::users::dsl::*;
     let insertable: InsertableUser = payload.into();
     diesel::insert_into(users)
@@ -37,8 +34,6 @@ pub fn update_score(
     usrid: &str,
 ) -> ServiceResult<()> {
     use crate::schema::users::dsl::*;
-
-    //Ok(())
     match challenge {
         1 => Ok(set_one(conn, add_score)?),
         2 => Ok(set_two(conn, add_score)?),
@@ -49,6 +44,19 @@ pub fn update_score(
         7 => Ok(set_seven(conn, add_score)?),
         _ => Err(ServiceError::InternalServerError),
     }
+}
+
+pub fn get_top_twenty(conn: &PgConnection) -> ServiceResult<Vec<InsertableUser>> {
+    use crate::schema::users::dsl::*;
+    let results = users
+        .filter(score.gt(0))
+        .order(score.desc())
+        .limit(20)
+        .load::<InsertableUser>(conn)?;
+
+    Ok(results)
+    //    let leaders = users.select(*).order(score.desc()).limit(20).execute(conn)?;
+    //    Ok(leaders)
 }
 
 fn set_one(conn: &PgConnection, add_score: i32) -> ServiceResult<()> {

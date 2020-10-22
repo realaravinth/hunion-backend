@@ -35,10 +35,23 @@ pub async fn logout(id: Identity) -> ServiceResult<impl Responder> {
     Ok(HttpResponse::Ok().finish())
 }
 
-pub async fn leaderoard(id: Identity) -> ServiceResult<impl Responder> {
+pub async fn leaderoard(
+    id: Identity,
+    pool: web::Data<ConnectionPool>,
+) -> ServiceResult<impl Responder> {
+    use crate::payload::leaderboard::Leaderboard;
     chech_time()?;
     check(&id).await?;
-    Ok(HttpResponse::Ok().finish())
+    let conn = pool.get()?;
+    let topTwenty = web::block(move || actions::get_top_twenty(&conn)).await?;
+    let requestion_user = id.identity().unwrap();
+    let conn = pool.get()?;
+    let user = web::block(move || actions::find_user_by_userid(&requestion_user, &conn)).await?;
+    let resp = Leaderboard {
+        topTwenty,
+        you: user.unwrap(),
+    };
+    Ok(HttpResponse::Ok().json(resp))
 }
 
 use challenges::challenges::*;
@@ -75,7 +88,7 @@ pub async fn check_response(
 }
 
 pub async fn get_state(id: Identity) -> ServiceResult<impl Responder> {
-    //    chech_time()?;
+    chech_time()?;
     check(&id).await?;
     Ok(HttpResponse::Ok().finish())
 }
