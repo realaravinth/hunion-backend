@@ -27,6 +27,7 @@ pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
         challengeBody,
         challengeAnswer: answer,
         score: 10,
+        hasAnswered: *has_answered,
     }
 }
 

@@ -14,7 +14,7 @@ use actix_session::CookieSession;
 use actix_web::{
     http::header,
     middleware::{Compress, Logger},
-    web, App, HttpRequest, HttpServer, Result,
+    web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
 };
 use dotenv::dotenv;
 use std::env;
@@ -26,9 +26,11 @@ mod models;
 mod payload;
 mod utils;
 
+use crate::errors::*;
 use crate::handlers::*;
 use crate::payload::challenges::*;
 use challenges::Challenge;
+use std::fs::read_to_string;
 
 lazy_static! {
     pub static ref ROOT: String =
@@ -44,6 +46,12 @@ lazy_static! {
     pub static ref START_TIME_STRING: String = env::var("START_TIME")
         .expect("Please set START_TIME to the port that you wish to listen to");
 }
+
+//pub async fn index() -> ServiceResult<impl Responder> {
+//    let index = read_to_string(format!("{}/index.html", env::var("STATIC").unwrap())).unwrap();
+//
+//    Ok(HttpResponse::Ok().content_type("text/html").body(index))
+//}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -62,6 +70,7 @@ async fn main() -> std::io::Result<()> {
     let STATIC =
         env::var("STATIC").expect("Please set STATIC to the port that you wish to listen to");
 
+    let index = read_to_string(format!("{}/index.html", &STATIC)).unwrap();
     HttpServer::new(move || {
         App::new()
             .wrap(Compress::default())
@@ -94,7 +103,7 @@ async fn main() -> std::io::Result<()> {
                     .max_age(3600)
                     .domain(&domain)
                     .same_site(SameSite::Lax)
-                    .secure(true),
+                    .secure(false),
             ))
             .wrap(Logger::default())
             .route("/api/login", web::post().to(login))

@@ -19,12 +19,24 @@ pub struct Challenge<'a> {
     pub challengeBody: &'a str,
     pub challengeAnswer: Option<&'a str>,
     pub score: u32,
+    pub hasAnswered: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)] //, Queryable)]
+pub struct CheckResponseRequestActual {
+    pub id: u32,
+    pub userAnswer: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)] //, Queryable)]
 pub struct CheckResponseRequest<'a> {
     pub id: u32,
     pub userAnswer: &'a str,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)] //, Queryable)]
+pub struct CheckResponseResponse {
+    pub isCorrect: bool,
 }
 
 pub fn get_challenges(progress: &Progress) -> [&Challenge; 7] {
@@ -39,15 +51,15 @@ pub fn get_challenges(progress: &Progress) -> [&Challenge; 7] {
     ]
 }
 
-pub fn check_answer(payload: CheckResponseRequest) -> ServiceResult<bool> {
+pub fn check_answer(payload: &CheckResponseRequestActual) -> ServiceResult<bool> {
     match payload.id {
-        1 => Ok(one::check(payload.userAnswer)),
-        2 => Ok(two::check(payload.userAnswer)),
-        3 => Ok(three::check(payload.userAnswer)),
-        4 => Ok(four::check(payload.userAnswer)),
-        5 => Ok(five::check(payload.userAnswer)),
-        6 => Ok(six::check(payload.userAnswer)),
-        7 => Ok(seven::check(payload.userAnswer)),
+        1 => Ok(one::check(&payload.userAnswer)),
+        2 => Ok(two::check(&payload.userAnswer)),
+        3 => Ok(three::check(&payload.userAnswer)),
+        4 => Ok(four::check(&payload.userAnswer)),
+        5 => Ok(five::check(&payload.userAnswer)),
+        6 => Ok(six::check(&payload.userAnswer)),
+        7 => Ok(seven::check(&payload.userAnswer)),
         _ => Err(ServiceError::InternalServerError),
     }
 }
