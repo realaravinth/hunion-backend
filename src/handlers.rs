@@ -102,11 +102,19 @@ pub async fn register(
     Ok(HttpResponse::Ok())
 }
 
-pub async fn get_questions(id: Identity) -> ServiceResult<impl Responder> {
+pub async fn get_questions(
+    id: Identity,
+    pool: web::Data<ConnectionPool>,
+) -> ServiceResult<impl Responder> {
     chech_time()?;
     check(&id).await?;
     use crate::user::Progress;
-    let progress = [false; 7];
+    let requestion_user = id.identity().unwrap();
+    let conn = pool.get()?;
+    let insertable_user =
+        web::block(move || actions::find_user_by_userid(&requestion_user, &conn)).await?;
+    let user: crate::user::User = insertable_user.unwrap().into();
+    let progress = user.progress;
     let resp = challenges::challenges::get_challenges(&progress);
     Ok(HttpResponse::Ok().json(resp))
 }
