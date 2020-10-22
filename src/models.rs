@@ -1,44 +1,56 @@
+use crate::payload::register::RegisterRequestPayload;
+use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Deserialize, Serialize)] //, Queryable)]
-pub struct User {
-    pub userID: String,
+use crate::schema::users;
+
+#[derive(Debug, Queryable, Insertable)] //, Queryable)]
+#[table_name = "users"]
+pub struct InsertableUser {
+    pub userid: String,
     pub name: String,
-    pub score: usize,
-    pub progress: Progress,
+    pub score: i32,
+    pub one: Option<bool>,
+    pub two: Option<bool>,
+    pub three: Option<bool>,
+    pub four: Option<bool>,
+    pub five: Option<bool>,
+    pub six: Option<bool>,
+    pub seven: Option<bool>,
 }
 
-pub type Progress = [bool; 7];
-//    c1: bool,
-//    c2: bool,
-//    c3: bool,
-//    c4: bool,
-//    c5: bool,
-//    c6: bool,
-//    c7: bool,
-//}
-
-//impl Progress {
-//    pub fn new() -> Self {
-//        Progress [
-//             false,
-//             false,
-//             false,
-//             false,
-//             false,
-//             false,
-//             false,
-//        ]
-//    }
-//}
-
-impl User {
-    pub fn new(userID: String, name: String) -> Self {
-        User {
-            userID,
+impl InsertableUser {
+    pub fn new(userid: String, name: String) -> Self {
+        InsertableUser {
+            userid,
             name,
             score: 0,
-            progress: [false; 7], //Progress::new(),
+            one: None,
+            two: None,
+            three: None,
+            four: None,
+            five: None,
+            six: None,
+            seven: None,
+        }
+    }
+}
+
+impl From<RegisterRequestPayload> for InsertableUser {
+    fn from(inbound: RegisterRequestPayload) -> Self {
+        let userid = inbound.userid;
+        let name = inbound.name;
+        InsertableUser {
+            userid,
+            name,
+            score: 0,
+            one: None,
+            two: None,
+            three: None,
+            four: None,
+            five: None,
+            six: None,
+            seven: None,
         }
     }
 }

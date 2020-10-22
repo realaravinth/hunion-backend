@@ -2,10 +2,11 @@
 use pretty_env_logger;
 #[macro_use]
 extern crate log;
-
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+extern crate diesel;
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_http::cookie::SameSite;
@@ -16,6 +17,7 @@ use actix_web::{
     middleware::{Compress, Logger},
     web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
 };
+
 use dotenv::dotenv;
 use std::env;
 
@@ -24,12 +26,15 @@ mod errors;
 mod handlers;
 mod models;
 mod payload;
+mod schema;
+mod user;
 mod utils;
 
 use crate::errors::*;
 use crate::handlers::*;
 use crate::payload::challenges::*;
 use challenges::Challenge;
+use database::pool::get_connection_pool;
 use std::fs::read_to_string;
 
 lazy_static! {
@@ -70,9 +75,12 @@ async fn main() -> std::io::Result<()> {
     let STATIC =
         env::var("STATIC").expect("Please set STATIC to the port that you wish to listen to");
 
+    let database_connection_pool = get_connection_pool(&DATABASE_URL);
+
     let index = read_to_string(format!("{}/index.html", &STATIC)).unwrap();
     HttpServer::new(move || {
         App::new()
+            .data(database_connection_pool.clone())
             .wrap(Compress::default())
             .wrap(
                 Cors::default()

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::models::Progress;
+use crate::user::Progress;
 use crate::START_TIME_STRING;
 
 use crate::errors::*;
@@ -63,6 +63,19 @@ pub fn check_answer(payload: &CheckResponseRequestActual) -> ServiceResult<bool>
         _ => Err(ServiceError::InternalServerError),
     }
 }
+pub fn get_score(id: u32) -> ServiceResult<u32> {
+    match id {
+        1 => Ok(one::UNANSWERED.score),
+        2 => Ok(two::UNANSWERED.score),
+        3 => Ok(three::UNANSWERED.score),
+        4 => Ok(four::UNANSWERED.score),
+        5 => Ok(five::UNANSWERED.score),
+        6 => Ok(six::UNANSWERED.score),
+        7 => Ok(seven::UNANSWERED.score),
+        _ => Err(ServiceError::InternalServerError),
+    }
+}
+
 //            Challenge::generate_payload(&progress[0], challenges[0].clone()),
 //            Challenge::generate_payload(&progress[1], challenges[1].clone()),
 //            Challenge::generate_payload(&progress[2], challenges[2].clone()),

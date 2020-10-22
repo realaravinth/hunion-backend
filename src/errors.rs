@@ -1,7 +1,9 @@
 use actix_http::ResponseBuilder;
+use actix_web::error::BlockingError;
 use actix_web::{error::ResponseError, http::header, http::StatusCode, HttpResponse};
 use diesel::result::Error as DBError;
 use failure::Fail;
+use r2d2::Error as r2Error;
 use serde::{Deserialize, Serialize};
 
 use std::convert::From;
@@ -15,9 +17,9 @@ pub enum ServiceError {
     AuthorizationRequired,
     #[fail(display = "internal error")] // 500
     InternalServerError,
-    #[fail(display = "time over")] //408
+    #[fail(display = "Time over")] //408
     Timeout,
-    #[fail(display = "too early")] //403
+    #[fail(display = "Too early")] //403
     TooEarly,
     #[fail(display = "Unable to connect to DB")]
     UnableToConnectToDb,
@@ -65,6 +67,18 @@ impl From<std::time::SystemTimeError> for ServiceError {
 }
 impl From<actix_http::Error> for ServiceError {
     fn from(_: actix_http::Error) -> ServiceError {
+        ServiceError::InternalServerError
+    }
+}
+
+impl From<r2Error> for ServiceError {
+    fn from(_: r2Error) -> ServiceError {
+        ServiceError::InternalServerError
+    }
+}
+
+impl From<BlockingError<ServiceError>> for ServiceError {
+    fn from(_: BlockingError<ServiceError>) -> ServiceError {
         ServiceError::InternalServerError
     }
 }
