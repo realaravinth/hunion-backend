@@ -47,10 +47,30 @@ pub async fn check_response(
     json: web::Json<CheckResponseRequestActual>,
     pool: web::Data<ConnectionPool>,
 ) -> ServiceResult<impl Responder> {
+    use crate::utils::duplicate::detect_duplicate;
     chech_time()?;
     check(&id).await?;
-    let isCorrect = check_answer(&json.into_inner())?;
-    let resp = CheckResponseResponse { isCorrect };
+    let userid = id.identity().unwrap();
+    let payload = json.into_inner();
+    let verdict = check_answer(&payload)?;
+    let resp = CheckResponseResponse {
+        isCorrect: verdict.isCorrect,
+    };
+    let score = verdict.score;
+    if verdict.isCorrect {
+        let conn = pool.get()?;
+        let user = web::block(move || actions::find_user_by_userid(&userid, &conn)).await?;
+        if user.is_none() {
+            return Err(ServiceError::AuthorizationRequired);
+        } else {
+            detect_duplicate(user.unwrap(), payload.id)?;
+        }
+
+        let userid = id.identity().unwrap();
+
+        let conn = pool.get()?;
+        web::block(move || actions::update_score(score, payload.id, &conn, &userid)).await?;
+    }
     Ok(HttpResponse::Ok().json(resp))
 }
 

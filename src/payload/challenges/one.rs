@@ -31,10 +31,17 @@ pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
     }
 }
 
-pub fn check(user_answer: &str) -> bool {
+use super::challenges::CheckResponseResponseBuilder;
+pub fn check(user_answer: &str) -> CheckResponseResponseBuilder {
     if user_answer.trim() == challengeAnswer {
-        true
+        CheckResponseResponseBuilder {
+            isCorrect: true,
+            score: UNANSWERED.score as i32,
+        }
     } else {
-        false
+        CheckResponseResponseBuilder {
+            isCorrect: false,
+            score: UNANSWERED.score as i32,
+        }
     }
 }

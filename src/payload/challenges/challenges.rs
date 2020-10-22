@@ -39,6 +39,12 @@ pub struct CheckResponseResponse {
     pub isCorrect: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)] //, Queryable)]
+pub struct CheckResponseResponseBuilder {
+    pub score: i32,
+    pub isCorrect: bool,
+}
+
 pub fn get_challenges(progress: &Progress) -> [&Challenge; 7] {
     [
         one::generate(&progress[0]),
@@ -51,7 +57,9 @@ pub fn get_challenges(progress: &Progress) -> [&Challenge; 7] {
     ]
 }
 
-pub fn check_answer(payload: &CheckResponseRequestActual) -> ServiceResult<bool> {
+pub fn check_answer(
+    payload: &CheckResponseRequestActual,
+) -> ServiceResult<CheckResponseResponseBuilder> {
     match payload.id {
         1 => Ok(one::check(&payload.userAnswer)),
         2 => Ok(two::check(&payload.userAnswer)),
@@ -63,19 +71,6 @@ pub fn check_answer(payload: &CheckResponseRequestActual) -> ServiceResult<bool>
         _ => Err(ServiceError::InternalServerError),
     }
 }
-pub fn get_score(id: u32) -> ServiceResult<u32> {
-    match id {
-        1 => Ok(one::UNANSWERED.score),
-        2 => Ok(two::UNANSWERED.score),
-        3 => Ok(three::UNANSWERED.score),
-        4 => Ok(four::UNANSWERED.score),
-        5 => Ok(five::UNANSWERED.score),
-        6 => Ok(six::UNANSWERED.score),
-        7 => Ok(seven::UNANSWERED.score),
-        _ => Err(ServiceError::InternalServerError),
-    }
-}
-
 //            Challenge::generate_payload(&progress[0], challenges[0].clone()),
 //            Challenge::generate_payload(&progress[1], challenges[1].clone()),
 //            Challenge::generate_payload(&progress[2], challenges[2].clone()),
