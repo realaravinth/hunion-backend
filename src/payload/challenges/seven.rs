@@ -1,5 +1,5 @@
 use super::challenges::Challenge;
-pub static challengeAnswer: &'static str = "nCTF{91QGh7kJxl0bBYt3tu96GnfqN8i9oSI}";
+pub static challengeAnswer: &'static str = "91QGh7kJxl0bBYt3tu96GnfqN8i9oSI";
 pub static UNANSWERED: &'static Challenge = &init(&false);
 
 pub static ANSWERED: &'static Challenge = &init(&true);
@@ -31,7 +31,7 @@ pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
 }
 
 pub fn check(user_answer: &str) -> bool {
-    if user_answer == challengeAnswer {
+    if user_answer.trim() == challengeAnswer {
         true
     } else {
         false

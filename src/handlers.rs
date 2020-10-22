@@ -16,7 +16,7 @@ pub async fn login(
 ) -> ServiceResult<impl Responder> {
     chech_time()?;
     debug!("{:?}", &json.userID);
-    if json.userID == "a" {
+    if json.userID.trim() == "a" {
         let response = login::LoginResponse::new();
         id.remember("User1".to_owned()); // <- remember identity
         Ok(HttpResponse::Ok().json(response))
