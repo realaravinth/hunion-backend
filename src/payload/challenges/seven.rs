@@ -13,7 +13,7 @@ pub fn generate<'a>(has_answered: &'a bool) -> &Challenge {
 }
 
 pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
-    let challengeBody = r" <p> You are are R2-D2, a cute robot from the Star Wars franchise. You are tasked with hacking into the most secure valut of the Death Star to retrive it's blueprints. The vault is controlled by a computer and requires a password to open. The source code for the vault was obtained by one of our comrades. <br /> Please find the password(the flag) hidden in the source code and help the rebels live to fight another day. <br /> <br /> <br /> Vault: <a href='https://deathstarvault.herokuapp.com/' target='_blank' >https://deathstarvault.herokuapp.com/</a > <br /> Source code: <a href='https://github.com/realaravinth/death-star' target='_blank'>https://github.com/realaravinth/death-star</a> </p> ";
+    let challengeBody = r" <p> You are R2-D2, a cute robot from the Star Wars franchise. You are tasked with hacking into the most secure vault of the Death Star to retrieve it's blueprints. The vault is controlled by a computer and requires a password to open. The source code for the vault was obtained by one of our comrades. <br /> Please find the password(the flag) hidden in the source code and help the rebels live to fight another day. <br /> <br /> <br /> Vault: <a href='https://deathstarvault.herokuapp.com/' target='_blank' >https://deathstarvault.herokuapp.com/</a > <br /> Source code: <a href='https://github.com/realaravinth/death-star' target='_blank'>https://github.com/realaravinth/death-star</a> </p> ";
     let challengeTitle = "R2^_^3_&s%";
     let ans = "nCTF{91QGh7kJxl0bBYt3tu96GnfqN8i9oSI}";
 
