@@ -9,9 +9,8 @@ pub fn find_user_by_userid(
     conn: &PgConnection,
 ) -> ServiceResult<Option<InsertableUser>> {
     use crate::schema::users::dsl::*;
-
     let user = users
-        .filter(userid.eq(userid))
+        .filter(userid.eq(userID))
         .first::<InsertableUser>(conn)
         .optional()?;
     Ok(user)
@@ -55,8 +54,6 @@ pub fn get_top_twenty(conn: &PgConnection) -> ServiceResult<Vec<InsertableUser>>
         .load::<InsertableUser>(conn)?;
 
     Ok(results)
-    //    let leaders = users.select(*).order(score.desc()).limit(20).execute(conn)?;
-    //    Ok(leaders)
 }
 
 fn set_one(conn: &PgConnection, add_score: i32) -> ServiceResult<()> {

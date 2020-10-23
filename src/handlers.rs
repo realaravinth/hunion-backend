@@ -1,9 +1,3 @@
-use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
-use actix_web::{
-    middleware::{Compress, Logger},
-    web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
-};
-
 use super::errors::*;
 use super::payload::login;
 use super::payload::*;
@@ -11,6 +5,12 @@ use super::utils::is_authenticated::check;
 use super::utils::start_time::chech_time;
 use crate::database::actions;
 use crate::database::pool::ConnectionPool;
+use crate::user::User;
+use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
+use actix_web::{
+    middleware::{Compress, Logger},
+    web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+};
 
 pub async fn login(
     id: Identity,
@@ -19,8 +19,11 @@ pub async fn login(
 ) -> ServiceResult<impl Responder> {
     chech_time()?;
     let conn = pool.get()?;
+    debug!("{:?}", json.userID);
     let user = web::block(move || actions::find_user_by_userid(json.userID.trim(), &conn)).await?;
+    debug!("{:?}", user);
     if let Some(user) = user {
+        debug!("{}", user.userid);
         let response = login::LoginResponse::new();
         id.remember(user.userid.to_owned()); // <- remember identity
         Ok(HttpResponse::Ok().json(response))
@@ -108,12 +111,11 @@ pub async fn get_questions(
 ) -> ServiceResult<impl Responder> {
     chech_time()?;
     check(&id).await?;
-    use crate::user::Progress;
     let requestion_user = id.identity().unwrap();
     let conn = pool.get()?;
     let insertable_user =
         web::block(move || actions::find_user_by_userid(&requestion_user, &conn)).await?;
-    let user: crate::user::User = insertable_user.unwrap().into();
+    let user: User = insertable_user.unwrap().into();
     let progress = user.progress;
     let resp = challenges::challenges::get_challenges(&progress);
     Ok(HttpResponse::Ok().json(resp))

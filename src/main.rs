@@ -61,7 +61,6 @@ lazy_static! {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     pretty_env_logger::init();
-    dotenv().ok();
     let _ = env::var("ROOT").expect("Please set ROOT to the port that you wish to listen to");
     let _ = env::var("START_TIME")
         .expect("Please set START_TIME to the port that you wish to listen to");
@@ -82,33 +81,26 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(database_connection_pool.clone())
             .wrap(Compress::default())
-            .wrap(
-                Cors::default()
-                    .allowed_origin("http://localhost:3000")
-                    .allowed_methods(vec!["GET", "POST"])
-                    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-                    .allowed_header(header::CONTENT_TYPE)
-                    .supports_credentials()
-                    .max_age(3600),
-            )
+            //    .wrap(
+            //        Cors::default()
+            //            .allowed_origin("http://localhost:3000")
+            //            .allowed_methods(vec!["GET", "POST"])
+            //            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+            //            .allowed_header(header::CONTENT_TYPE)
+            //            .supports_credentials()
+            //            .max_age(3600),
+            //    )
             .wrap(
                 CookieSession::signed(&secret.as_bytes())
                     .domain(&domain)
-                    .name(&domain)
+                    .name("BfkhiQuM&yBgq!9SMrLH%*4vePY$LMV!2u4B!XewAhZXsC%nWn^pUcjx@exbR3N9")
                     .path("/")
                     .secure(true),
-            )
-            .wrap(
-                CookieSession::signed(&secret.as_bytes())
-                    .domain(&domain)
-                    .name("on")
-                    .path("/")
-                    .secure(false),
             )
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(&secret.as_bytes())
                     .name("Authorization")
-                    .max_age(3600)
+                    .max_age(36000)
                     .domain(&domain)
                     .same_site(SameSite::Lax)
                     .secure(false),

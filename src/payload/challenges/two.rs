@@ -1,7 +1,6 @@
 use super::challenges::Challenge;
 
-pub static challengeAnswer: &'static str =
-    "db108f489f3b14e228b3b35f365b3b6d4f64a6f653287347ad3bde203c70cae7";
+pub static challengeAnswer: &'static str = "adfadsfalkj23423";
 pub static UNANSWERED: &'static Challenge = &init(&false);
 
 pub static ANSWERED: &'static Challenge = &init(&true);

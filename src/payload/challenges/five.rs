@@ -13,7 +13,7 @@ pub fn generate<'a>(has_answered: &'a bool) -> &Challenge {
 }
 
 pub const fn init<'a>(has_answered: &'a bool) -> Challenge {
-    let challengeBody = r#" <p> The flag is hidden in this <a href='./voodo.txt' target='_blank'>file</a>. It would be very tedious if you look for it manually, something tells me there's a better way. </p> <br /> <br /> File: <a href='./voodo.txt' target='_blank'>voodo.txt</a>. "#;
+    let challengeBody = r#" <p> The flag is hidden in this <a href='./voodoo.txt' target='_blank'>file</a>. It would be very tedious if you look for it manually, something tells me there's a better way. </p> <br /> <br /> File: <a href='./voodoo.txt' target='_blank'>voodoo.txt</a>. "#;
     let challengeTitle = "hidd3n_in_p1ain_sight";
     let ans = "SC2INcxcddmV2";
 
