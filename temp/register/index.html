@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const submitForm = () => {
+        const userid = document.getElementById('userid').value;
+        const name = document.getElementById('name').value;
+        console.log(userid, name);
+        postData(userid, name).then(
+        console.log('submit'));
+      };
+      async function postData(userid, name) {
+        console.log(userid, name);
+        const payload = {
+            "userid": userid,
+            "name": name
+        };
+        const response = await fetch("/api/register", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        if (response.ok) {
+          alert("registered")
+        } else {
+          alert('HTTP-Error: ' + response.status);
+        }
+      }
+    </script>
+  </head>
+  <body>
+      <p>UserID:</p>
+      <input type="text" id="userid" value="userid" name="userid" /><br />
+      <p>Name:</p>
+      <input type="text" id="name" value="name" name="name" /><br />
+      <input type="button" onclick="submitForm()" />
+  </body>
+</html>
