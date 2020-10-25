@@ -4,9 +4,9 @@ use crate::models::InsertableUser;
 
 impl From<InsertableUser> for User {
     fn from(insert: InsertableUser) -> User {
-        let userID = insert.userid;
+        let user_id = insert.userid;
         User {
-            userID,
+            user_id,
             name: insert.name,
             score: insert.score,
             progress: [
@@ -24,14 +24,14 @@ impl From<InsertableUser> for User {
 
 fn option_to_bool(inbound: Option<bool>) -> bool {
     match inbound {
-        Some(bool) => true,
+        Some(_) => true,
         None => false,
     }
 }
 
 #[derive(Debug, PartialEq, Deserialize, Serialize)] //, Queryable)]
 pub struct User {
-    pub userID: String,
+    pub user_id: String,
     pub name: String,
     pub score: i32,
     pub progress: Progress,
@@ -40,9 +40,9 @@ pub struct User {
 pub type Progress = [bool; 7];
 
 impl User {
-    pub fn new(userID: String, name: String) -> Self {
+    pub fn new(user_id: String, name: String) -> Self {
         User {
-            userID,
+            user_id,
             name,
             score: 0,
             progress: [false; 7], //Progress::new(),

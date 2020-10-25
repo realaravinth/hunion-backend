@@ -6,11 +6,8 @@ use super::utils::start_time::chech_time;
 use crate::database::actions;
 use crate::database::pool::ConnectionPool;
 use crate::user::User;
-use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
-use actix_web::{
-    middleware::{Compress, Logger},
-    web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
-};
+use actix_identity::Identity;
+use actix_web::{web, HttpResponse, Responder};
 
 pub async fn login(
     id: Identity,
@@ -19,8 +16,8 @@ pub async fn login(
 ) -> ServiceResult<impl Responder> {
     chech_time()?;
     let conn = pool.get()?;
-    debug!("{:?}", json.userID);
-    let user = web::block(move || actions::find_user_by_userid(json.userID.trim(), &conn)).await?;
+    debug!("{:?}", json.user_id);
+    let user = web::block(move || actions::find_user_by_userid(json.user_id.trim(), &conn)).await?;
     debug!("{:?}", user);
     if let Some(user) = user {
         debug!("{}", user.userid);
@@ -46,12 +43,12 @@ pub async fn leaderoard(
     chech_time()?;
     check(&id).await?;
     let conn = pool.get()?;
-    let topTwenty = web::block(move || actions::get_top_twenty(&conn)).await?;
+    let top_twenty = web::block(move || actions::get_top_twenty(&conn)).await?;
     let requestion_user = id.identity().unwrap();
     let conn = pool.get()?;
     let user = web::block(move || actions::find_user_by_userid(&requestion_user, &conn)).await?;
     let resp = Leaderboard {
-        topTwenty,
+        top_twenty,
         you: user.unwrap(),
     };
     Ok(HttpResponse::Ok().json(resp))
@@ -70,10 +67,10 @@ pub async fn check_response(
     let payload = json.into_inner();
     let verdict = check_answer(&payload)?;
     let resp = CheckResponseResponse {
-        isCorrect: verdict.isCorrect,
+        is_correct: verdict.is_correct,
     };
     let score = verdict.score;
-    if verdict.isCorrect {
+    if verdict.is_correct {
         let conn = pool.get()?;
         let user = web::block(move || actions::find_user_by_userid(&userid, &conn)).await?;
         if user.is_none() {
@@ -82,10 +79,8 @@ pub async fn check_response(
             detect_duplicate(user.unwrap(), payload.id)?;
         }
 
-        let userid = id.identity().unwrap();
-
         let conn = pool.get()?;
-        web::block(move || actions::update_score(score, payload.id, &conn, &userid)).await?;
+        web::block(move || actions::update_score(score, payload.id, &conn)).await?;
     }
     Ok(HttpResponse::Ok().json(resp))
 }

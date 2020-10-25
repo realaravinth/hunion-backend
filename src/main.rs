@@ -1,4 +1,4 @@
-#![warn(rust_2018_idioms)]
+#![warn(rust_2018_idioms, elided_lifetimes_in_paths)]
 use pretty_env_logger;
 #[macro_use]
 extern crate log;
@@ -7,15 +7,13 @@ extern crate lazy_static;
 
 #[macro_use]
 extern crate diesel;
-use actix_cors::Cors;
 use actix_files::Files;
 use actix_http::cookie::SameSite;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_session::CookieSession;
 use actix_web::{
-    http::header,
     middleware::{Compress, Logger},
-    web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+    web, App, HttpServer,
 };
 
 use dotenv::dotenv;
@@ -30,12 +28,8 @@ mod schema;
 mod user;
 mod utils;
 
-use crate::errors::*;
 use crate::handlers::*;
-use crate::payload::challenges::*;
-use challenges::Challenge;
 use database::pool::get_connection_pool;
-use std::fs::read_to_string;
 
 lazy_static! {
     pub static ref ROOT: String =
@@ -52,31 +46,23 @@ lazy_static! {
         .expect("Please set START_TIME to the port that you wish to listen to");
 }
 
-//pub async fn index() -> ServiceResult<impl Responder> {
-//    let index = read_to_string(format!("{}/index.html", env::var("STATIC").unwrap())).unwrap();
-//
-//    Ok(HttpResponse::Ok().content_type("text/html").body(index))
-//}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     pretty_env_logger::init();
     let _ = env::var("ROOT").expect("Please set ROOT to the port that you wish to listen to");
     let _ = env::var("START_TIME")
         .expect("Please set START_TIME to the port that you wish to listen to");
-    //    let _ = env::var("DURATION_IN_SECONDS").expect("Please set DURATION_IN_SECONDS");
     let port = env::var("PORT").expect("Please set PORT to the port that you wish to listen to");
     let secret = env::var("SECRET").expect("Please set SECRET");
     let domain =
         env::var("DOMAIN").expect("Please set DOMAIN to the port that you wish to listen to");
-    let DATABASE_URL = env::var("DATABASE_URL")
+    let database_url = env::var("DATABASE_URL")
         .expect("Please set DATABASE_URL to the port that you wish to listen to");
-    let STATIC =
-        env::var("STATIC").expect("Please set STATIC to the port that you wish to listen to");
+    let static_files = env::var("static_files")
+        .expect("Please set static_files to the port that you wish to listen to");
 
-    let database_connection_pool = get_connection_pool(&DATABASE_URL);
+    let database_connection_pool = get_connection_pool(&database_url);
 
-    let index = read_to_string(format!("{}/index.html", &STATIC)).unwrap();
     HttpServer::new(move || {
         App::new()
             .data(database_connection_pool.clone())
@@ -113,7 +99,7 @@ async fn main() -> std::io::Result<()> {
             .route("/api/check-response", web::post().to(check_response))
             .route("/api/get-challenges", web::get().to(get_questions))
             .route("/api/register", web::post().to(register))
-            .service(Files::new("/", &STATIC).index_file("index.html"))
+            .service(Files::new("/", &static_files).index_file("index.html"))
     })
     .bind(format!("0.0.0.0:{}", &port))?
     .run()

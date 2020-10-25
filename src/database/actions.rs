@@ -1,16 +1,15 @@
 use crate::errors::*;
 use crate::models::InsertableUser;
-use crate::payload::leaderboard::Leaderboard;
 use crate::payload::register::RegisterRequestPayload;
 use diesel::prelude::*;
 
 pub fn find_user_by_userid(
-    userID: &str,
+    user_id: &str,
     conn: &PgConnection,
 ) -> ServiceResult<Option<InsertableUser>> {
     use crate::schema::users::dsl::*;
     let user = users
-        .filter(userid.eq(userID))
+        .filter(userid.eq(user_id))
         .first::<InsertableUser>(conn)
         .optional()?;
     Ok(user)
@@ -26,13 +25,7 @@ pub fn insert_new_user(payload: RegisterRequestPayload, conn: &PgConnection) -> 
     Ok(())
 }
 
-pub fn update_score(
-    add_score: i32,
-    challenge: u32,
-    conn: &PgConnection,
-    usrid: &str,
-) -> ServiceResult<()> {
-    use crate::schema::users::dsl::*;
+pub fn update_score(add_score: i32, challenge: u32, conn: &PgConnection) -> ServiceResult<()> {
     match challenge {
         1 => Ok(set_one(conn, add_score)?),
         2 => Ok(set_two(conn, add_score)?),

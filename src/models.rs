@@ -1,5 +1,4 @@
 use crate::payload::register::RegisterRequestPayload;
-use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::schema::users;
